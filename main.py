@@ -37,3 +37,18 @@ async def get_book(book_id: int):
     except IndexError:
         raise HTTPException(status_code=404, detail='Book not found')
     return {'book': book}
+
+
+@app.post('/books', status_code=201)
+async def add_book(name: str):
+    """Insert a new book"""
+    print('NAME: ', name)
+    if not name.strip():
+        return {'error': 'Need to add a valid name'}
+    if any([name == book['title'] for book in FAKE_BOOKS_DATABASE]):
+        return {'message': 'Book already exists'}
+    if FAKE_BOOKS_DATABASE:
+        highest_id = max(FAKE_BOOKS_DATABASE, key=lambda book: book['id']).get('id')
+        FAKE_BOOKS_DATABASE.append({'id': highest_id + 1, 'title': name})
+        return {'message': 'New book added'}
+    return {'message': 'No books available'}
