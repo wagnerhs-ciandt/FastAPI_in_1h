@@ -27,7 +27,7 @@ async def list_books():
     return {'books': FAKE_BOOKS_DATABASE}
 
 
-@app.get('/books/{bookd_id}', status_code=200)
+@app.get('/books/{book_id}', status_code=200)
 async def get_book(book_id: int):
     """Lists a book by ID"""
     if book_id <= 0:
@@ -52,3 +52,4 @@ async def add_book(name: str):
         FAKE_BOOKS_DATABASE.append({'id': highest_id + 1, 'title': name})
         return {'message': 'New book added'}
     return {'message': 'No books available'}
+
