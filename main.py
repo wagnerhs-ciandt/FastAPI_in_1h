@@ -1,17 +1,25 @@
+from random import choice
 from typing import List, Dict, Union
+from uuid import uuid4
 
 from fastapi import FastAPI, HTTPException
+from fastapi.encoders import jsonable_encoder
+
+from schemas import Book, BookPublic
 
 
 app = FastAPI()
 
 FAKE_BOOKS_DATABASE: List[Dict[str, Union[int, str]]] = [
-    {'id': 1, 'title': 'Learning Python: Powerful Object-Oriented Programming'},
-    {'id': 2, 'title': 'Think Python: An Introduction to Software Design'},
-    {'id': 3, 'title': 'Fluent Python: Clear, Concise, and Effective Programming'},
-    {'id': 4, 'title': 'Web Scraping with Python: Collecting More Data from the Modern Web'},
-    {'id': 5, 'title': 'Automate the Boring Stuff with Python, 2nd Edition: Practical Programming for Total Beginners'},
-    {'id': 6, 'title': 'Classic Computer Science Problems in Python'},
+    {'book_id': uuid4().hex, 'title': 'Learning Python: Powerful Object-Oriented Programming'},
+    {'book_id': uuid4().hex, 'title': 'Think Python: An Introduction to Software Design'},
+    {'book_id': uuid4().hex, 'title': 'Fluent Python: Clear, Concise, and Effective Programming'},
+    {'book_id': uuid4().hex, 'title': 'Web Scraping with Python: Collecting More Data from the Modern Web'},
+    {
+        'book_id': uuid4().hex,
+        'title': 'Automate the Boring Stuff with Python, 2nd Edition: Practical Programming for Total Beginners',
+    },
+    {'book_id': uuid4().hex, 'title': 'Classic Computer Science Problems in Python'},
 ]
 
 
@@ -39,17 +47,18 @@ async def get_book(book_id: int):
     return {'book': book}
 
 
-@app.post('/books', status_code=201)
-async def add_book(name: str):
+@app.post('/books', status_code=201, response_model=BookPublic)
+async def add_book(book: Book):
     """Insert a new book"""
-    print('NAME: ', name)
-    if not name.strip():
-        return {'error': 'Need to add a valid name'}
-    if any([name == book['title'] for book in FAKE_BOOKS_DATABASE]):
-        return {'message': 'Book already exists'}
-    if FAKE_BOOKS_DATABASE:
-        highest_id = max(FAKE_BOOKS_DATABASE, key=lambda book: book['id']).get('id')
-        FAKE_BOOKS_DATABASE.append({'id': highest_id + 1, 'title': name})
-        return {'message': 'New book added'}
-    return {'message': 'No books available'}
+    if not book.title.strip():
+        raise HTTPException(status_code=400, detail='Need to add a valid name')
 
+    book_id = uuid4().hex
+    new_book = BookPublic(book_id=book_id, title=book.title)
+    json_book = jsonable_encoder(new_book)
+
+    if any([book.title == books['title'] for books in FAKE_BOOKS_DATABASE]):
+        raise HTTPException(status_code=400, detail='Book already exists')
+
+    FAKE_BOOKS_DATABASE.append(json_book)
+    return {'title': book.title}
