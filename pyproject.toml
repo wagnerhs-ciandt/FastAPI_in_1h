@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "fastapi-in-1hr"
+version = "0.1.0"
+description = "FastAPI: Build Python APIs in 1 Hour - Beginner"
+authors = ["Wagner Herculano <wagnerhs@ciandt.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
