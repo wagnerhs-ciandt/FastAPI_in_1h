@@ -1,6 +1,6 @@
 from typing import List, Dict, Union
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 
 
 app = FastAPI()
@@ -25,3 +25,15 @@ async def welcome():
 async def list_books():
     """Lists all books"""
     return {'books': FAKE_BOOKS_DATABASE}
+
+
+@app.get('/books/{bookd_id}', status_code=200)
+async def get_book(book_id: int):
+    """Lists a book by ID"""
+    if book_id <= 0:
+        raise HTTPException(status_code=400, detail='book_id must be greater than 0')
+    try:
+        book = FAKE_BOOKS_DATABASE[book_id - 1]
+    except IndexError:
+        raise HTTPException(status_code=404, detail='Book not found')
+    return {'book': book}
