@@ -44,3 +44,14 @@ async def add_book(book: BookSchema, session: Session = Depends(get_session)):
     session.refresh(book_db)
 
     return book_db
+
+
+@router.delete('/{book_id}', status_code=HTTPStatus.OK)
+async def delete_book(book_id: int, session: Session = Depends(get_session)):
+    book_db = session.scalar(select(Book).where(Book.book_id == book_id))
+    if not book_db:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Book not found')
+    session.delete(book_db)
+    session.commit()
+
+    return {'message': 'Book deleted'}
