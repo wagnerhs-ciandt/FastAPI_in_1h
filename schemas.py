@@ -1,6 +1,4 @@
-from uuid import uuid4
-
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict
 
 
 class Book(BaseModel):
@@ -8,5 +6,6 @@ class Book(BaseModel):
 
 
 class BookPublic(BaseModel):
-    book_id: str = Field(default_factory=lambda: uuid4().hex)
+    book_id: int
     title: str
+    model_config = ConfigDict(from_attributes=True)
