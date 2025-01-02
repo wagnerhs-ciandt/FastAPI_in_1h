@@ -2,7 +2,7 @@
 name = "fastapi-in-1hr"
 version = "0.1.0"
 description = "FastAPI: Build Python APIs in 1 Hour - Beginner"
-authors = ["Wagner Herculano <wagnerhs@ciandt.com>"]
+authors = ["Wagner Herculano <wagnerhs@ciandt.com>", "Wagner Herculano <wagherculano@hotmail.com>"]
 license = "MIT"
 readme = "README.md"
 
@@ -10,8 +10,13 @@ readme = "README.md"
 python = "^3.10"
 fastapi = {extras = ["standard"], version = "^0.115.6"}
 uvicorn = "^0.34.0"
-ruff = "^0.8.4"
+sqlalchemy = "^2.0.36"
+pydantic-settings = "^2.7.1"
 
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.4"
+pytest-cov = "^6.0.0"
+ruff = "^0.8.4"
 
 [build-system]
 requires = ["poetry-core"]
@@ -28,3 +33,15 @@ select = ['I', 'F', 'E', 'W', 'PL', 'PT']
 [tool.ruff.format]
 preview = true
 quote-style = 'single'
+
+[tool.pytest.ini_options]
+pythonpath = "."
+addopts = '-p no:warnings'
+
+# [tool.taskipy.tasks]
+# lint = 'ruff check .; ruff check . --diff'
+# format = 'ruff check . --fix; ruff format .'
+# run = 'fastapi dev todo_list/app.py --host 0.0.0.0'
+# pre_test = 'task lint'
+# test = 'pytest -s -x --cov=todo_list -vv'
+# post_test = 'coverage html'
