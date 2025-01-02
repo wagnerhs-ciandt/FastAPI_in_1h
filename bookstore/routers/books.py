@@ -2,6 +2,7 @@ from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from bookstore.database import get_session
@@ -55,3 +56,17 @@ async def delete_book(book_id: int, session: Session = Depends(get_session)):
     session.commit()
 
     return {'message': 'Book deleted'}
+
+
+@router.put('/{book_id}', response_model=BookPublic)
+async def update_book(book_id: int, book: BookSchema, session: Session = Depends(get_session)):
+    book_db = session.scalar(select(Book).where(Book.book_id == book_id))
+    if not book_db:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Book not found")
+    try:
+        book_db.title = book.title
+        session.commit()
+        session.refresh(book_db)
+        return book_db
+    except IntegrityError:
+        raise HTTPException(status_code=HTTPStatus.CONFLICT, detail="Book already exists")
